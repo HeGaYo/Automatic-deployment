@@ -59,7 +59,7 @@ doc for web-ssh：GateOne
 >      $ mkdir /tmp/chapter1
 >      $ cd GateOne
 >      $ cp gateone/docs/embedding_configs/99tutorial_chapter1.conf /tmp/chapter1
->      $ ./run_gateone.py --setting_dir=/tmp/chapter1
+>      $ ./run_gateone.py --settings_dir=/tmp/chapter1
 >
 >4.3 将`Gateone/gateone/static/gateone.js`复制到应用的static文件夹中
 >4.4 在你想要展示的页面文件.html文件下添加以下内容：
@@ -102,7 +102,7 @@ doc for web-ssh：GateOne
 >```
 > 5.3 修改`GateOne.init`函数，添加参数`autoconnect_url`
 >```
-> GateOne.init({ url:'https://127.0.0.1:port', disableTermTransitions:true, showTitle:false, showToolbar:false, fillContainer:true, autoConnectURL:'ssh://hostname@ip_addr' }); } document.body.appendChild(scriptTag); </script>
+> GateOne.init({ url:'https://127.0.0.1:port', disableTermTransitions:true, showTitle:false, showToolbar:false, fillContainer:true, autoConnectURL:'ssh://hostname@ip_addr' }); } 
 >```
 
 --------
