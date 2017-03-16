@@ -8,6 +8,7 @@ doc for web-ssh：GateOne
 >     $ wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py
 >     $ sudo python get-pip.py
 >     $ sudo pip install tornado
+>
 >1.2 验证安装环境
 >
 >     $ python -V
