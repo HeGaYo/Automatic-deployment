@@ -9,34 +9,34 @@ doc for web-ssh：GateOne
 >     $ sudo python get-pip.py
 >     $ sudo pip install tornado
 >1.2 验证安装环境
-
+>
 >     $ python -V
 >     $ python -c "import tornado; print(tornado.version)"
 
 --------
 
 >##### 2.GateOne的获取和安装
-
+>
 >2.1 通过git上源码获取
-
+>
 >     $ sudo apt-get install git
 >     $ git clone https://github.com/liftoff/GateOne.git
 >     $ cd GateOne
 >     $ sudo python ./setup.py install
-
+>
 >2.2 安装过程中可能会遇到的问题
 >
 > * 安装HTML5lib时提示setuptools版本太低，需要升级
-
+>
 >       $ pip install -U setuptools
-
+>
 >将setup.py成功运行之后即可启动gateone服务，至此，gateone的安装完成
 
 --------
 >##### 3.GateOne的测试
-
+>
 >默认的配置文件是/etc/gateone/conf.d/10.server.conf（位置不是绝对的）
-
+>
 >         $sudo gateone
 >默认打开的端口号为443。在浏览器中输入''https://127.0.0.1:443''。
 >如果配置成功，会出现gateone的页面。点击Terminal图标，可以在web端上使用命令行、也可以通过ssh登录到其他主机上进行操作。
@@ -45,9 +45,9 @@ doc for web-ssh：GateOne
 >##### 4.GateOne的嵌入到其他应用中
 >
 >4.1 配置文件的修改
-
+>
 >我们使用`GateOne/gateone/docs/embeddings_configs/99tutorial_chapter1.conf`作为默认的配置文件，可以设置端口号以及是否需要验证等
-
+>
 >* 本身这个文件是有一个语法问题， `auth=none`后面要加上一个`,`,不然运行的时候会报错
 >
 > * `origin = [*]`表示不对源进行检查
@@ -82,7 +82,7 @@ doc for web-ssh：GateOne
 --------
 >##### 5.gateone免密码登录(autologin)
 >其实gateone的url可以变为`https://ip_addr:port/?ssh=ssh://hostname@host_ipaddr`,这样只需要输入密码即可通过SSH访问其他主机。但还是不方便，如果有很多台主机，还要记住一堆主机的密码...
-
+>
 > 5.1 SSH 免密码登录
 >
 >```
