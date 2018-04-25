@@ -2,6 +2,7 @@
 - vmawar + ubuntu16.04
 虚拟机系统配置如下图所示：
 ![虚拟机配置](assets/markdown-img-paste-20180313143149518.png)
+
 - 部署文档，参考官网上提供的文档：
 https://docs.openstack.org/kolla-ansible/latest/user/quickstart.html
 1. **安装pip包管理并且确保它是最新的版本，以及pip的相关依赖**
