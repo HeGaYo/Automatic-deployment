@@ -4,9 +4,11 @@
 endpoint
 public endpoint
 
+可以两个网卡可以用同一个网段
 
 ## 背景：
 用vmware创建虚拟机，操作系统选择ubuntu14.04.5，创建了两个虚拟网卡，管理网卡选择了NAT模式，外部网卡选择了仅主机模式。
+
 ## 问题描述：
 用集成脚本成功搭建openstack环境后，创建的实例无法上网
 
@@ -43,6 +45,7 @@ b. 尝试`ping $BAIDU_IPADDR`，尝试直接ping百度的ip
 
 8. 实例连接物理网络测试：
 ![](assets/markdown-img-paste-20180509120021820.png)
+
 9. 利用xshell连接实例测试：
 ![](assets/markdown-img-paste-20180509120051767.png)
 ![](assets/markdown-img-paste-20180509140315999.png)
