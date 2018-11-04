@@ -35,6 +35,10 @@ docker inspect glance_api
 ![](assets/markdown-img-paste-20180626110233114.png)
 然后我们去查看服务器上的对应目录，应该是用了一个卷挂载的方式，glance_api容器里面的`/var/lib/glance/images`对应服务器上的`/var/lib/docker/volumes/glance/_data/images`
 ![](assets/markdown-img-paste-20180626110428594.png)
+同理，我还查看了nova相关的卷挂载
+![](assets/markdown-img-paste-2018062810304029.png)
+![](assets/markdown-img-paste-20180628103258289.png)
+![](assets/markdown-img-paste-20180628103415252.png)
 ## 性能稳定性
 
 1. 判断服务是否正常启动，容器状态和服务状态
@@ -123,11 +127,42 @@ b. 让容器可以直接配置host网络，比如neutron组件会添加网卡之
 首先列出跟neutron相关的容器以及相关的进程。
 ![](assets/markdown-img-paste-20180627175647138.png)
 ![](assets/markdown-img-paste-20180627175749165.png)
+neturon server:对外提供openstack网络api，接收请求，并调用plugin处理请求
+plugin：处理neutron server发来的请求，维护openstack的逻辑网络状态，并调用agent处理请求
+agent(openvswitch/l3/dhcp):处理plugin的请求，负责在network provider上真正实现各种网络功能
+metadata
+network provider：提供网络服务的虚拟或物理网络设备，例如linux bridge、open vswitch或者其他支持neutron的物理交换机
+queue：neutron server、plugin和agent之间通过messaging queue通信和调用
+database：用于存放openstack的网络状态信息，包括network、subnet、port、router等。
+首先看配置文件中跟neutron相关的配置。
+![](assets/markdown-img-paste-20180628094028521.png)
+![](assets/markdown-img-paste-20180628102340529.png)
+除了Neutron本身命令外，还包括了Linux Bridge的brctl命令；OpenvSwitch的ovs-vsctl、ovs-ofctl命令和L3的NameSpace的ipnetns等命令。
+查看关于bridge的信息，可以查看tap的id和网桥qbrxxxx
+![](assets/markdown-img-paste-20180628104954741.png)
+![](assets/markdown-img-paste-20180628105150638.png)
+eth0连接的目的设备是：tap35ef9ee1-8d，别名为net0；tap8f6a666a-6a，别名为net1。TAP设备桥接到网桥qbrXX上（都由Linux kernel创建）。qbr设备是因为不能在TAP设备上配置iptables实现安全组（SecurGroup）而增加的设备。
+![](assets/markdown-img-paste-2018062810560834.png)
+
+从虚拟机开始分析，tap->qbr->qvb->qvo->br-int->br-ex/br-tun
+查看虚拟机的xml描述文件
+![](assets/markdown-img-paste-20180628113826275.png)
+查看主机上创建的linux网桥
+![](assets/markdown-img-paste-20180628114535630.png)
+查看ip link的输出信息，可以看到qbr上连接了tabxxx和qvoxxx
+![](assets/markdown-img-paste-20180628113959338.png)
+qvoxxx上连接了br-int网桥
+![](assets/markdown-img-paste-2018062811413166.png)
+然后br-int上连接了多个接口和其他网桥，如br-tun，br-ex。这里的qr指的是类型为internal的网络.br-int还会连接router和dhcp上的端口。
+![](assets/markdown-img-paste-20180628114216708.png)
+
+
 
 ## 从容器的角度
 **每个容器中只有一个进程**
 ![](assets/markdown-img-paste-20180625210604810.png)
 ![](assets/markdown-img-paste-20180625210632871.png)
+
 **容器存储**
 这里没有用默认的driver：aufs，而是用了overlay2，而底册文件系统是extfs，各层数据存放在`/var/lib/docker/overlay2`下
 ![](assets/markdown-img-paste-20180626113603588.png)
@@ -149,7 +184,7 @@ docker为容器提供了两种存放数据的资源
     - 多种storage-driver：aufs，device mapper，btrfs，overlayfs，vfs和zfs
 
 - data volume：一般适用于有持久化数据需求的情况，容器启动时需要加载已有的数据，容器销毁时希望保留产生的新数据，也就是说这种容器是有状态的。
-    - 本质上时docker host文件系统的目录或文件，能够直接被mount到容器的文件系统中。
+    - 本质上是docker host文件系统的目录或文件，能够直接被mount到容器的文件系统中。
     - 特点：1. data volume是目录或文件，而非没有格式化的磁盘 2. 容器可以读写volume中的数据 3. volume数据可以永久被保存，即使容器销毁
     - 目前还没有方法设置volume的容量，它取决于文件系统当前未使用的空间
     - 两种类型：bind mount（让host和容器共享数据，即使容器没有了，bind mount也还在，bind mount是host文件系统中的数据，只是借用给容器；bind mount还可以设置制定数据的读写权限，ro是指容器无法对bind mount数据进行修改，只有host有权修改，不足在于bind mount要指定host文件系统的特定路径，限制了容器的可移植性，当迁移到其他host并且该host没有要mount的数据或者数据在其他路径的话，操作会失败）和docker managed volume（不需要指定mount源，指明mount point即可）
@@ -167,6 +202,9 @@ docker为容器提供了两种存放数据的资源
 - docker managed volume，由于volume在host中的目录，实在容器启动时才生成，所以需要将共享数据复制到volume中。 当你修改容器中的volume时，host的目录也会变化；同理，当你修改host的mount源目录下的内容，容器中的volume也会变化。
 ## Kolla能否集成新的容器
 比如一起部署管理系统的容器（200-300M）？
+
+
+## kolla如何控制 docker
 
 
 

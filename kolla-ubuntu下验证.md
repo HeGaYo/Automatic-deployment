@@ -191,6 +191,7 @@ apt-get install vim
 我们这里不直接用kolla来构建镜像，而是从docker-hub中下载对应的镜像。当我尝试用kolla来构建镜像时，不但构建的时间很长，构建会出错，有几个镜像一直无法构建成功。然后通过`docker info`命令来查看镜像数量的时候多达三四百个。然而我们如果直接用从docker hub中拉取镜像，只会有我们要用到的镜像，镜像数量大大减小。后期通过`docker export`或者`docker save`将镜像导出即可，然后用于多节点部署，可以支持离线安装openstack。
 
 3. 实战记录
+
 |操作系统|方式|是否成功|
 |-----|----|----|
 |centos| all in one| yes|
